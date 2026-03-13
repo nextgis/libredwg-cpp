@@ -1,12 +1,7 @@
 #include <libredwg_cpp/document.hpp>
 #include <libredwg_cpp/error.hpp>
 
-#include "bits.h"
-#include <dwg.h>
-
-extern "C" { // for correct linkage with the non-interface part of LibreDWG
-int dwg_write_dxf(Bit_Chain *dat, Dwg_Data *dwg);
-}
+#include <dwg.hpp>
 
 namespace {
 struct FilePtrDeleter final {
@@ -49,7 +44,8 @@ Document Document::open(const std::string &path) {
 }
 
 void Document::writeDxf(const std::string &path) const {
-  Bit_Chain dat = {0};
+  Bit_Chain dat;
+  memset(&dat, 0, sizeof(Bit_Chain));
   dat.version = mImpl->header.version;
   dat.from_version = mImpl->header.from_version;
 

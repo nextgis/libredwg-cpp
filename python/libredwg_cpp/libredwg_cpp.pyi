@@ -8,8 +8,11 @@ import typing
 __all__: list[str] = [
     "Document",
     "Error",
+    "ILogger",
     "IOError",
     "InternalError",
+    "LoggingDispatcher",
+    "LoggingLevel",
     "ParseError",
     "UnsupportedError",
     "ValidationError",
@@ -25,11 +28,68 @@ class Document:
 class Error(Exception):
     pass
 
+class ILogger:
+    def __init__(self) -> None: ...
+    def debug(self, message: str) -> None: ...
+    def error(self, message: str) -> None: ...
+    def info(self, message: str) -> None: ...
+    def warning(self, message: str) -> None: ...
+
 class IOError(Error):
     pass
 
 class InternalError(Error):
     pass
+
+class LoggingDispatcher:
+    @staticmethod
+    def instance() -> LoggingDispatcher: ...
+    def setLogger(self, logger: typing.Any, usingLoggingLevel: bool = True) -> None: ...
+    def setLoggingLevel(self, level: LoggingLevel) -> None: ...
+
+class LoggingLevel:
+    """
+    Members:
+
+      NONE
+
+      ERROR
+
+      INFO
+
+      TRACE
+
+      HANDLE
+
+      INSANE
+
+      ALL
+    """
+
+    ALL: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.ALL: 9>
+    ERROR: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.ERROR: 1>
+    HANDLE: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.HANDLE: 4>
+    INFO: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.INFO: 2>
+    INSANE: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.INSANE: 5>
+    NONE: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.NONE: 0>
+    TRACE: typing.ClassVar[LoggingLevel]  # value = <LoggingLevel.TRACE: 3>
+    __members__: typing.ClassVar[
+        dict[str, LoggingLevel]
+    ]  # value = {'NONE': <LoggingLevel.NONE: 0>, 'ERROR': <LoggingLevel.ERROR: 1>, 'INFO': <LoggingLevel.INFO: 2>, 'TRACE': <LoggingLevel.TRACE: 3>, 'HANDLE': <LoggingLevel.HANDLE: 4>, 'INSANE': <LoggingLevel.INSANE: 5>, 'ALL': <LoggingLevel.ALL: 9>}
+    def __eq__(self, other: typing.Any) -> bool: ...
+    def __getstate__(self) -> int: ...
+    def __hash__(self) -> int: ...
+    def __index__(self) -> int: ...
+    def __init__(self, value: typing.SupportsInt) -> None: ...
+    def __int__(self) -> int: ...
+    def __ne__(self, other: typing.Any) -> bool: ...
+    def __repr__(self) -> str: ...
+    def __setstate__(self, state: typing.SupportsInt) -> None: ...
+    def __str__(self) -> str: ...
+    @property
+    def name(self) -> str: ...
+    @property
+    def value(self) -> int: ...
 
 class ParseError(Error):
     pass

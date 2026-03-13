@@ -1,7 +1,5 @@
 import libredwg_cpp
-
-
-LIBREDWG_DATADIR = "../src/external/libredwg/test/test-data/"
+from utils import LIBREDWG_DATADIR
 
 
 def test_example_2000():

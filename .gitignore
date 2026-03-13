@@ -54,3 +54,8 @@ env
 
 # Tests output datadir
 tests/out_data/
+tests/output/
+
+# Examples output datadir
+examples/out_data/
+examples/output/

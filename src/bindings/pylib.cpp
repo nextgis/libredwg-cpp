@@ -4,6 +4,10 @@
 
 #include <libredwg_cpp/document.hpp>
 #include <libredwg_cpp/error.hpp>
+#include <libredwg_cpp/logging_dispatcher.hpp>
+
+#include <py_ilogger_wrapper.hpp>
+#include <pyilogger.hpp>
 
 PYBIND11_MODULE(libredwg_cpp, m) {
   m.doc() = "Python bindings for libredwg-cpp";
@@ -55,4 +59,38 @@ PYBIND11_MODULE(libredwg_cpp, m) {
       .def("write_dxf", &libredwg::Document::writeDxf,
            pybind11::arg("path_to_dxf"))
       .def("version", &libredwg::Document::version);
+
+  pybind11::class_<libredwg::ILogger, PyILogger,
+                   std::shared_ptr<libredwg::ILogger>>(m, "ILogger")
+      .def(pybind11::init<>())
+      .def("debug", &libredwg::ILogger::debug, pybind11::arg("message"))
+      .def("info", &libredwg::ILogger::info, pybind11::arg("message"))
+      .def("warning", &libredwg::ILogger::warning, pybind11::arg("message"))
+      .def("error", &libredwg::ILogger::error, pybind11::arg("message"));
+
+  pybind11::enum_<libredwg::LoggingLevel>(m, "LoggingLevel")
+      .value("NONE", libredwg::LoggingLevel::None)
+      .value("ERROR", libredwg::LoggingLevel::Error)
+      .value("INFO", libredwg::LoggingLevel::Info)
+      .value("TRACE", libredwg::LoggingLevel::Trace)
+      .value("HANDLE", libredwg::LoggingLevel::Handle)
+      .value("INSANE", libredwg::LoggingLevel::Insane)
+      .value("ALL", libredwg::LoggingLevel::All);
+
+  pybind11::class_<
+      libredwg::LoggingDispatcher,
+      std::unique_ptr<libredwg::LoggingDispatcher, pybind11::nodelete>>(
+      m, "LoggingDispatcher")
+      .def_static("instance", &libredwg::LoggingDispatcher::instance,
+                  pybind11::return_value_policy::reference)
+      .def("setLoggingLevel", &libredwg::LoggingDispatcher::setLoggingLevel,
+           pybind11::arg("level"))
+      .def(
+          "setLogger",
+          [](libredwg::LoggingDispatcher *dispatcher, pybind11::object logger,
+             bool usingLoggingLevel) {
+            dispatcher->setLogger(std::make_shared<PythonLoggerWrapper>(logger),
+                                  usingLoggingLevel);
+          },
+          pybind11::arg("logger"), pybind11::arg("usingLoggingLevel") = true);
 }

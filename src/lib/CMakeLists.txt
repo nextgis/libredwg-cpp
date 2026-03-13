@@ -1,5 +1,8 @@
+add_subdirectory(dwg_logging_override)
+
 set(SOURCES
     ./document.cpp
+    ./logging_dispatcher.cpp
 )
 
 add_library(libredwg-cpp ${SOURCES})
